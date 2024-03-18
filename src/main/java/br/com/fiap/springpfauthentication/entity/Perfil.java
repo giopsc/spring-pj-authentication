@@ -16,7 +16,12 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "TB_PERFIL")
+@Table(name = "TB_PERFIL", uniqueConstraints = {
+        @UniqueConstraint(
+                name = "UK_NM_PERFIL",
+                columnNames = "NM_PERFIL"
+        )
+})
 public class Perfil {
 
     @Id
@@ -26,7 +31,7 @@ public class Perfil {
     private Long id;
 
 
-    @Column(name = "NM_PERFIL")
+    @Column(name = "NM_PERFIL", nullable = false)
     private String nome;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})

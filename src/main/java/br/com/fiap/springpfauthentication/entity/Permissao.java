@@ -14,9 +14,15 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(name = "TB_PERMISSAO")
+@Table(name = "TB_PERMISSAO",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "UK_NM_PERMISSAO_SISTEMA",
+                        columnNames = {"SISTEMA", "NM_PERMISSAO"}
+                )
+        }
+)
 public class Permissao {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_PERMISSAO")
@@ -24,8 +30,7 @@ public class Permissao {
     @Column(name = "ID_PERMISSAO")
     private Long id;
 
-
-    @Column(name = "NM_PERMISSAO")
+    @Column(name = "NM_PERMISSAO", nullable = false)
     private String nome;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -34,7 +39,8 @@ public class Permissao {
             referencedColumnName = "ID_SISTEMA",
             foreignKey = @ForeignKey(
                     name = "FK_PERMISSAO_SISTEMA"
-            )
+            ),
+            nullable = false
     )
     private Sistema sistema;
 }

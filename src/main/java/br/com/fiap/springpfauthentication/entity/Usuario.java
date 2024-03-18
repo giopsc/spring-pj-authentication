@@ -13,7 +13,18 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(name = "TB_USUARIO")
+@Table(name = "TB_USUARIO", uniqueConstraints = {
+
+        @UniqueConstraint(
+                name = "UK_EMAIL_USUARIO",
+                columnNames = "EMAIL"
+        ),
+        @UniqueConstraint(
+                name = "UK_PESSOA_USUARIO",
+                columnNames = "PESSOA"
+        )
+
+})
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_USUARIO")
@@ -21,8 +32,10 @@ public class Usuario {
     @Column(name = "ID_USUARIO")
     private Long id;
 
+    @Column(name = "EMAIL", nullable = false)
     private String email;
 
+    @Column(name = "SENHA", nullable = false)
     private String senha;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})

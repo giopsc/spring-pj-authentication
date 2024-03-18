@@ -16,7 +16,18 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "TB_SISTEMA")
+@Table(name = "TB_SISTEMA",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "UK_NM_SISTEMA",
+                        columnNames = "NM_SISTEMA"
+                ),
+                @UniqueConstraint(
+                        name = "UK_SG_SISTEMA",
+                        columnNames = "SG_SISTEMA"
+                )
+        }
+)
 public class Sistema {
 
     @Id
@@ -26,8 +37,12 @@ public class Sistema {
     private Long id;
 
 
-    @Column(name = "NM_SISTEMA")
+    @Column(name = "NM_SISTEMA", nullable = false)
     private String nome;
+
+    @Column(name = "SG_SISTEMA", nullable = false)
+    private String sigla;
+
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
