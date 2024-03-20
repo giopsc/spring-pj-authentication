@@ -49,19 +49,23 @@ public class UsuarioResource {
         // Se o objeto pessoa está nulo, retorna nulo
         if (Objects.isNull(u.pessoa())) return null;
 
+
+        Usuario save = repo.save(service.toEntity(u));
+
+
+        UsuarioResponse response = service.toResponse(save);
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id")
+                .path("/{id}")
                 .buildAndExpand(
-                        repo.save(service.toEntity(u))
+                        save.getId()
                 )
                 .toUri();
         /* Caso tenha um path, como um "/id" (declarado na annotation),
            após o fromRquestUri(), utilizar o .path("/{id}") */
 
 
-        return ResponseEntity.created(uri).body(
-                service.toResponse(repo.save(service.toEntity(u)))
-        );
+        return ResponseEntity.created(uri).body(response);
         /* UsuarioRequest transformado em Entity,
         depois salvo no Repository,
         que foi transformado em um DTO de resposta */
