@@ -8,9 +8,13 @@ import br.com.fiap.springpfauthentication.entity.Usuario;
 import br.com.fiap.springpfauthentication.repository.UsuarioRepository;
 import br.com.fiap.springpfauthentication.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,17 +35,36 @@ public class UsuarioResource {
     }
 
     @GetMapping(value = "/{id}")
-    public UsuarioResponse findById(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponse> findById(@PathVariable Long id) {
         Usuario usuario = repo.findById(id).orElseThrow();
-        return service.toResponse(usuario);
+        if (Objects.isNull(usuario)) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(service.toResponse(usuario));
     }
 
     @Transactional
     @PostMapping
-    public UsuarioResponse save(@RequestBody UsuarioRequest u) {
-        if (Objects.isNull(u.pessoa())) return null;
-        return service.toResponse(repo.save(service.toEntity(u)));
-    }
+    public ResponseEntity<UsuarioResponse> save(@RequestBody UsuarioRequest u) {
 
+        // Se o objeto pessoa está nulo, retorna nulo
+        if (Objects.isNull(u.pessoa())) return null;
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id")
+                .buildAndExpand(
+                        repo.save(service.toEntity(u))
+                )
+                .toUri();
+        /* Caso tenha um path, como um "/id" (declarado na annotation),
+           após o fromRquestUri(), utilizar o .path("/{id}") */
+
+
+        return ResponseEntity.created(uri).body(
+                service.toResponse(repo.save(service.toEntity(u)))
+        );
+        /* UsuarioRequest transformado em Entity,
+        depois salvo no Repository,
+        que foi transformado em um DTO de resposta */
+    }
 
 }
